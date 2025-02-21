@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Add a Student</title>
+    </head>
+    <body>
+        <h1>Add a Student Record</h1>
+
+        <form action="http://localhost:3000/student/create" method="post">
+            <p>First Name: <input type="text" name="firstname" required /></p>
+            <p>Last Name: <input type="text" name="lastname" required /></p>
+            <p>Student Course: <input type="text" name="course" required /></p>
+            <p>Student Mark: <input type="number" name="studentMark" required /></p>
+            <p>Student Type:
+                <select name="studentType">
+                    <option value="Undergraduate">Undergraduate</option>
+                    <option value="Masters">Masters</option>
+                </select>
+            </p>
+            <input type="submit" value="Register Student!" />
+        </form> 
+        <br />
+
+        <h2>Student Records</h2>
+        <ul id="studentList"></ul>
+
+        <script>
+            async function fetchStudents() {
+                const response = await fetch('http://localhost:3000/students'); // Ensure correct endpoint
+                const students = await response.json();
+                const list = document.getElementById('studentList');
+                list.innerHTML = '';
+
+                students.forEach(student => {
+                    const li = document.createElement('li');
+                    li.textContent = `${student.firstname} ${student.lastname} - ${student.course} - ${student.studentMark} - ${student.studentType}`;
+                    list.appendChild(li);
+                });
+            }
+            fetchStudents();
+        </script>
+    </body>
+</html>

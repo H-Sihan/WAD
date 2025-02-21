@@ -13,14 +13,22 @@ db.exec(`
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         firstname TEXT NOT NULL,
         lastname TEXT NOT NULL,
-        course TEXT NOT NULL
+        course TEXT NOT NULL,
+        studentMark INTEGER NOT NULL,
+        studentType TEXT NOT NULL
     )
 `);
 
-// Insert records
-const insert = db.prepare("INSERT INTO students (firstname, lastname, course) VALUES (?, ?, ?)");
-insert.run("Sihan","ABC","Comp. Sci");
-insert.run("Sihan","Sci","Comp. Sci");
+// Prepare Insert Statement
+const insert = db.prepare("INSERT INTO students (firstname, lastname, course, studentMark, studentType) VALUES (?, ?, ?, ?, ?)");
+
+// Insert sample records (if table is empty)
+const studentExists = db.prepare("SELECT COUNT(*) AS count FROM students").get();
+if (studentExists.count === 0) {
+    insert.run("Sihan", "ABC", "Comp. Sci", 85, "Undergraduate");
+    insert.run("John", "Doe", "Mathematics", 90, "Masters");
+    console.log("Sample records inserted!");
+}
 
 console.log("Database created!!!");
 
