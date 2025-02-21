@@ -8,6 +8,8 @@ import Database from 'better-sqlite3';
 const app = express();
 const db = new Database ('students.db')
 
+app.use(express.json());
+
 app.get('/', (req,res)=> {
     res.send('Hello World from Express!');
 });
@@ -28,7 +30,7 @@ app.get('/time', (req, res) => {
 
 app.get('/students', (req, res) => {
     try {
-        const stmt = db.prepare("SELECT * FROM student");
+        const stmt = db.prepare("SELECT * FROM students");
         const results = stmt.all();
         res.json(results);
     } catch (error) {
@@ -39,12 +41,13 @@ app.get('/students', (req, res) => {
 
 app.post('/student/create', (req, res) => {
     try {
-        const stmt = db.prepare("INSERT INTO students(firstname,lastname,course) VALUES(?,?,?)");
+        const stmt = db.prepare("INSERT INTO students (firstname, lastname, course) VALUES(?, ?, ?)");
         const info = stmt.run(req.body.firstname, req.body.lastname, req.body.course);
         res.json({id: info.lastInsertRowid});
     } catch(error) {
-        console.log(error);
+        console.log(error); 
         res.status(500).json({ error: error });
     }
 });
+
 app.listen(3000);
