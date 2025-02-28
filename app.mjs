@@ -5,6 +5,7 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 
 //import db from './database';
 
@@ -12,6 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+app.use(cors());
 const db = new Database ('students.db')
 //const db = new Database ("wadsongs.db")
 
