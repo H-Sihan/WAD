@@ -2,14 +2,20 @@
 
 import express from 'express';
 import Database from 'better-sqlite3';
-//npm install cors ---> Install the lib
-//import cors from 'cors'
+import path from 'path';
+import { fileURLToPath } from 'url';
+import bodyParser from 'body-parser';
 
+//import db from './database';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-//app.use(cors());
-//const db = new Database ('students.db')
-const db = new Database ("wadsongs.db")
+const db = new Database ('students.db')
+//const db = new Database ("wadsongs.db")
+
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.get('/', (req,res)=> {
