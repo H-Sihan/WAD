@@ -1,0 +1,133 @@
+// Search all songs
+app.get('/songs', (req, res) => {
+    try {
+        const stmt = db.prepare("SELECT * FROM wadsongs");
+        const results = stmt.all();
+        res.json(results);
+    } catch (error) {
+        console.log("Error: ", error);
+        res.status(500).json({error:error});
+    }
+});
+
+// Search all songs by a given artist (GET)
+app.get('/songs/artist/:artist', (req, res) => {
+    try {
+        const stmt = db.prepare("SELECT * FROM wadsongs WHERE artist = ?");
+        const results = stmt.all(req.params.artist);
+        res.json(results);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+//http://localhost:3000/songs/artist/Adele
+
+// Search all songs with a given title (GET)
+app.get('/songs/title/:title', (req, res) => {
+    try {
+        const stmt = db.prepare("SELECT * FROM wadsongs WHERE title = ?");
+        const results = stmt.all(req.params.title);
+        res.json(results);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+//http://localhost:3000/songs/title/Shape of You
+
+// Search for songs by BOTH artist and title (GET)
+app.get('/songs/search', (req, res) => {
+    try {
+        const { artist, title } = req.query;
+        const stmt = db.prepare("SELECT * FROM wadsongs WHERE artist = ? AND title = ?");
+        const results = stmt.all(artist, title);
+        res.json(results);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+//http://localhost:3000/songs/search?artist=Adele&title=Someone Like You
+
+// Find a song by ID (GET)
+app.get('/songs/:id', (req, res) => {
+    try {
+        const stmt = db.prepare("SELECT * FROM wadsongs WHERE id = ?");
+        const result = stmt.get(req.params.id);  // `get()` returns a single row
+        res.json(result || { message: "Song not found" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+//http://localhost:3000/songs/1
+import path from 'path';
+import { fileURLToPath } from 'url';
+import bodyParser from 'body-parser';
+
+//import db from './database';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const db = new Database ('students.db')
+//const db = new Database ("wadsongs.db")
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
+
+// Serve static files (HTML)
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Create Student (POST)
+app.post('/student/create', (req, res) => {
+    const { firstname, lastname, course, studentMark, studentType } = req.body;
+    if (!firstname || !lastname || !course || !studentMark || !studentType) {
+        return res.status(400).send('All fields are required!');
+    }
+
+    const stmt = db.prepare('INSERT INTO students (firstname, lastname, course, studentMark, studentType) VALUES (?, ?, ?, ?, ?)');
+    stmt.run(firstname, lastname, course, studentMark, studentType);
+
+    res.redirect('/');
+});
+
+// Find a song by ID (GET)
+app.get('/student/:id', (req, res) => {
+    try {
+        const stmt = db.prepare("SELECT * FROM students WHERE id = ?");
+        const result = stmt.get(req.params.id);  // `get()` returns a single row
+        res.json(result || { message: "Song not found" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.put('/student/:id', (req, res) =>{
+    try {
+        const stmt = db.prepare('UPDATE students SET firstname= ?, lastname= ?, course= ? WHERE id=?');
+        const info = stmt.run(req.body.firstname, req.body.lastname, req.body.course, req.params.id);
+        if(info.changes == 1) {
+            res.status(200).json({success: true});
+        } else {
+            res.status(404).json({error: "Could not find student with that ID."});
+        }
+    } catch(error) {
+        res.status(500).json({error: error});
+    }
+});
+
+app.delete('/student/:id', (req, res) => {
+    try {
+        const stmt = db.prepare('DELETE FROM students WHERE id=?');
+        const info = stmt.run(req.params.id);
+        if(info.changes == 1) {
+            res.json({success:1});
+        } else {
+            res.status(404).json({error: 'No product with that ID'});
+        }
+    } catch(error) {
+        res.status(500).json({ error: error });
+});

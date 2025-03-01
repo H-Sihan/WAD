@@ -1,0 +1,123 @@
+app.post('/songs/create', (req, res) => {
+    try {
+        const stmt = db.prepare("INSERT INTO wadsongs (title, artist_id, year, price, stock) VALUES(?, ?, ?, ?, ?)");
+        const info = stmt.run(req.body.title, req.body.artist_id, req.body.year, req.body.price, req.body.stock);
+        res.json({ id: info.lastInsertRowid });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.put('/songs/update/:id', (req, res) => {
+    try {
+        const stmt = db.prepare("UPDATE wadsongs SET price = ?, stock = ? WHERE id = ?");
+        const info = stmt.run(req.body.price, req.body.stock, req.params.id);
+
+        if (info.changes === 0) {
+            return res.status(404).json({ error: "Song not found" });
+        }
+        res.json({ message: "Song updated successfully" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+app.delete('/songs/delete/:id', (req, res) => {
+    try {
+        const stmt = db.prepare("DELETE FROM wadsongs WHERE id = ?");
+        const info = stmt.run(req.params.id);
+
+        if (info.changes === 0) {
+            return res.status(404).json({ error: "Song not found" });
+        }
+        res.json({ message: "Song deleted successfully" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+app.post('/songs/buy/:id', (req, res) => {
+    try {
+        const song = db.prepare("SELECT stock FROM wadsongs WHERE id = ?").get(req.params.id);
+        
+        if (!song) {
+            return res.status(404).json({ error: "Song not found" });
+        }
+        if (song.stock <= 0) {
+            return res.status(400).json({ error: "Not enough stock available" });
+        }
+
+        // Reduce stock by 1
+        db.prepare("UPDATE wadsongs SET stock = stock - 1 WHERE id = ?").run(req.params.id);
+
+        // Create order (assuming orders table exists)
+        const stmt = db.prepare("INSERT INTO orders (song_id, quantity) VALUES(?, ?)");
+        const info = stmt.run(req.params.id, 1);
+
+        res.json({ message: "Song purchased successfully", order_id: info.lastInsertRowid });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+app.get('/songs', (req, res) => {
+    try {
+        const stmt = db.prepare("SELECT * FROM wadsongs");
+        const songs = stmt.all();
+        res.json(songs);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/songs/artist/:artist_id', (req, res) => {
+    try {
+        const stmt = db.prepare("SELECT * FROM wadsongs WHERE artist_id = ?");
+        const songs = stmt.all(req.params.artist_id);
+        res.json(songs);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/artists', (req, res) => {
+    try {
+        const stmt = db.prepare("SELECT * FROM artists");
+        const artists = stmt.all();
+        res.json(artists);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+app.get('/users', (req, res) => {
+    try {
+        const stmt = db.prepare("SELECT * FROM ht_users");
+        const users = stmt.all();
+        res.json(users);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+CREATE TABLE IF NOT EXISTS orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    song_id INTEGER NOT NULL,
+    quantity_purchased INTEGER NOT NULL CHECK (quantity_purchased > 0),
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (song_id) REFERENCES wadsongs(id) ON DELETE CASCADE
+);
+
