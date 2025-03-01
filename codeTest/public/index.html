@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HitTastic! - Discover & Add Songs</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link External CSS -->
+    <script type="module" src="script.mjs"></script>
+</head>
+
+<body>
+    <!-- 🔹 Modern Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">🎵 HitTastic!</div>
+        <ul class="nav-links">
+            <li><a href="#addSongSection">➕ Add New Song</a></li>
+            <li><a href="#searchSongsSection">🔍 Search Songs</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <!-- 🎼 Add Song Section -->
+        <section id="addSongSection" class="form-container">
+            <h2>➕ Add a New Song</h2>
+            <form id="addSongForm">
+                <label>Title:</label>
+                <input type="text" id="title" required>
+
+                <label>Artist:</label>
+                <input type="text" id="artist" required>
+
+                <label>Year:</label>
+                <input type="number" id="year" required>
+
+                <label>Downloads:</label>
+                <input type="number" id="downloads" required>
+
+                <label>Price:</label>
+                <input type="number" id="price" step="0.01" required>
+
+                <label>Quantity:</label>
+                <input type="number" id="quantity" required>
+
+                <button type="submit" class="btn">➕ Add Song</button>
+            </form>
+            <p id="addSongMessage"></p>
+        </section>
+
+        <!-- 🔎 Search Songs Section -->
+        <section id="searchSongsSection" class="songs-container">
+            <h2>🔍 Search & Browse Songs</h2>
+            <input type="text" id="searchInput" placeholder="🔍 Search by title or artist..." onkeyup="filterSongs()">
+            <button id="fetchSongs" class="btn">🔄 Load Songs</button>
+            <div id="songList" class="song-grid"></div>
+        </section>
+    </div>
+</body>
+
+</html>
