@@ -1,0 +1,61 @@
+app.post('/songs/create', async (req, res) => {
+    try {
+      const { title, artist, year, downloads, price, quantity } = req.body;
+  
+      console.log("📥 Received Data:", req.body);
+  
+      // Ensure all fields exist and are non-empty
+      if (!title || !artist || !year || !downloads || !price || !quantity) {
+        console.error("❌ Missing fields");
+        return res.status(400).json({ error: "All fields are required." });
+      }
+  
+      // Force explicit type conversion
+      const yearInt = Number(year);
+      const downloadsInt = Number(downloads);
+      const priceFloat = parseFloat(price);
+      const quantityInt = Number(quantity);
+      const titleText = String(title).trim();
+      const artistText = String(artist).trim();
+  
+      // Log values before inserting
+      console.log("🔍 Converted Values:");
+      console.log("titleText:", titleText, "Type:", typeof titleText);
+      console.log("artistText:", artistText, "Type:", typeof artistText);
+      console.log("yearInt:", yearInt, "Type:", typeof yearInt);
+      console.log("downloadsInt:", downloadsInt, "Type:", typeof downloadsInt);
+      console.log("priceFloat:", priceFloat, "Type:", typeof priceFloat);
+      console.log("quantityInt:", quantityInt, "Type:", typeof quantityInt);
+  
+      // Ensure all values are valid and not NaN
+      if (
+        isNaN(yearInt) || isNaN(downloadsInt) ||
+        isNaN(priceFloat) || isNaN(quantityInt)
+      ) {
+        console.error("❌ Invalid number conversion");
+        return res.status(400).json({ error: "Year, downloads, price, and quantity must be valid numbers." });
+      }
+  
+      // Check for empty strings or invalid bindings
+      if (
+        titleText.length === 0 || artistText.length === 0 ||
+        typeof titleText !== "string" || typeof artistText !== "string"
+      ) {
+        console.error("❌ Title or Artist is invalid");
+        return res.status(400).json({ error: "Title and Artist must be valid non-empty strings." });
+      }
+  
+      // Insert the song into the database
+      const result = await db.run(
+        `INSERT INTO wadsongs (title, artist, year, downloads, price, quantity) VALUES (?, ?, ?, ?, ?, ?)`,
+        [titleText, artistText, yearInt, downloadsInt, priceFloat, quantityInt]
+      );
+  
+      console.log("✅ Song inserted with ID:", result.lastID);
+      res.status(201).json({ id: result.lastID, message: "Song added successfully!" });
+  
+    } catch (error) {
+      console.error("🔥 Error inserting song:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
