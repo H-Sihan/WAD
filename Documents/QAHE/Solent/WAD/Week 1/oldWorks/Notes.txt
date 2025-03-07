@@ -1,0 +1,6 @@
+Given an example of a possible Web API. What information could be provided by the Web API?
+    OpenWeather API
+    GitHub API
+    Google Maps API
+
+

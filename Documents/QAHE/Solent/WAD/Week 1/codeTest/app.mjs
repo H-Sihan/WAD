@@ -14,12 +14,24 @@
 import express from 'express';
 import Database from 'better-sqlite3';
 import cors from 'cors'
-
+//import sqlite3 from 'sqlite3';
+//import { open } from 'sqlite'; // Use sqlite wrapper for better async support
+//npm install sqlite3
 const app = express();
-app.use(express.urlencoded({ extended: true })); // For form-urlencoded data
+
+// Initialize the database connection
+/*const dbPromise = await open({
+    filename: 'wadsongs.db',
+    driver: sqlite3.Database,
+});*/
+ 
+// Initialize database connection (synchronous)
+const db = new Database('wadsongs.db');
+
+//app.use(express.urlencoded({ extended: true })); // For form-urlencoded data
 app.use(cors());
-const db = new Database ("wadsongs.db")
 app.use(express.json());
+app.use(express.static('public'));
 
 app.get('/', (req,res)=> {
     res.send('Hello World from Express!');
@@ -29,19 +41,35 @@ app.get('/time', (req, res) => {
     res.send(`There have been ${Date.now()} milliseconds since 1/1/70.`);
 });
 
-//POST /songs/create
+// POST endpoint to create a song
 app.post('/songs/create', (req, res) => {
     try {
-        // Debugging: Log request body to check received data
-        //console.log("Received data:", req.body);
+        const { title, artist, year, downloads, price, quantity } = req.body;
 
-        // Insert data into database
-        const stmt = db.prepare("INSERT INTO wadsongs (title, artist, year, downloads, price, quantity) VALUES(?, ?, ?, ?, ?, ?)");
-        const info = stmt.run(req.body.title, req.body.artist, req.body.year, req.body.downloads, req.body.price, req.body.quantity);
+        if (!title || !artist || !year || !downloads || !price || !quantity) {
+            return res.status(400).json({ error: "All fields are required." });
+        }
+
+        // Prepare and run SQL statement
+        const stmt = db.prepare(`
+            INSERT INTO wadsongs (title, artist, year, downloads, price, quantity) 
+            VALUES (?, ?, ?, ?, ?, ?)
+        `);
         
-        res.json({ id: info.lastInsertRowid });
+        const result = stmt.run(title, artist, year, downloads, price, quantity);
+
+        res.status(201).json({ id: result.lastInsertRowid, message: "Song added successfully!" });
     } catch (error) {
-        console.error("Error inserting data:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+//GET all songs
+app.get('/songs', (req, res) => {
+    try {
+        const songs = db.prepare("SELECT * FROM wadsongs").all();
+        res.json(songs);
+    } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
