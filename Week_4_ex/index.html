@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="module" src="index.mjs"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+        }
+
+        #ht_results {
+            border: 1px solid black;
+            background-color: #e0e0ff;
+            width: 90%;
+            height: 500px;
+            /* Increased height */
+            padding: 10px;
+            margin: 20px auto;
+            /* Centered results box */
+            overflow-y: auto;
+            /* Enable scrolling if needed */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid gray;
+            text-align: center;
+        }
+
+        th {
+            background-color: #333;
+            color: white;
+        }
+
+        button {
+            background-color: green;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: darkgreen;
+        }
+
+        input {
+            font-size: 16px;
+            padding: 5px;
+            width: 100px;
+        }
+
+        .pagination {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Welcome to HitTastic!</h1>
+    <p>Search and shop for your favourite top 40 hits!</p>
+
+    <div>
+        <label>Search for an artist:</label>
+        <input id="theArtist" type="text">
+        <button id="search">Search</button>
+        <button id="showAll">Show All Songs</button>
+    </div>
+
+    <div id="ht_results"></div>
+
+    <div class="pagination">
+        <button id="prevPage">Previous</button>
+        <span id="pageNumber">Page 1</span>
+        <button id="nextPage">Next</button>
+    </div>
+</body>
+
+</html>
