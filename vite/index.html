@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Map</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <style>
+        #map1 {
+            width: 800px;
+            height: 600px;
+        }
+    </style>
+
+    <!-- Include the JavaScript file in head -->
+    <script type="module" src="./src/map2.mjs"></script>
+</head>
+
+<body>
+    <h1>Interactive Map</h1>
+
+    <input type="text" id="artist" placeholder="Enter artist name">
+    <button id="findArtist">Where is this artist from?</button>
+
+    <div id="map1"></div>
+</body>
+</html>
