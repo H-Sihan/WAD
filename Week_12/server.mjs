@@ -24,6 +24,8 @@ db.serialize(() => {
   db.run("INSERT INTO ht_users VALUES ('admin', 'adminpass')");
 });
 
+// npm install express sqlite3 body-parser express-session xss
+
 // Home page
 app.get('/', (req, res) => {
   res.send(`
