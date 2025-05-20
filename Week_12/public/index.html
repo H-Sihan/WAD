@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HitTastic Login</title>
+</head>
+
+<body>
+    <h1>Welcome to HitTastic!</h1>
+
+    <h2>Login (Vulnerable to SQL Injection)</h2>
+    <form method="POST" action="/login">
+        <label>Username:</label>
+        <input type="text" name="username" required /><br />
+        <label>Password:</label>
+        <input type="password" name="password" required /><br />
+        <input type="submit" value="Login" />
+    </form>
+
+    <h2>Login (Secure Prepared Statement)</h2>
+    <form method="POST" action="/secure-login">
+        <label>Username:</label>
+        <input type="text" name="username" required /><br />
+        <label>Password:</label>
+        <input type="password" name="password" required /><br />
+        <input type="submit" value="Secure Login" />
+    </form>
+
+    <h2>Buy Song (XSS Vulnerable)</h2>
+    <form method="POST" action="/buy">
+        <input type="hidden" name="id" value="1<script>alert('This is XSS')</script>" />
+        <input type="submit" value="Buy with XSS" />
+    </form>
+
+    <h2>Buy Song (XSS Safe)</h2>
+    <form method="POST" action="/secure-buy">
+        <input type="hidden" name="id" value="1<script>alert('This will be escaped')</script>" />
+        <input type="submit" value="Buy Securely" />
+    </form>
+</body>
+
+</html>
